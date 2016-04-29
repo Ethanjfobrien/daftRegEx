@@ -2,6 +2,7 @@ import urllib3
 import xml.etree.ElementTree as ET
 import re
 import time
+import os
 
 http = urllib3.PoolManager()
 
@@ -35,31 +36,43 @@ def getPropertyUrls(filterStr="", exclude=True):
             tagStart = r.data.index('<a', start)
             quoteStart = r.data.index('"', tagStart)
             quoteEnd = r.data.index('"', quoteStart+1)
-            path = r.data[quoteStart+1: quoteEnd+1]
+            path = r.data[quoteStart+1: quoteEnd]
             link = "http://www.daft.ie" + path
 #            print link
             propertyResp = http.request('get', link)
             if propertyResp.status == 200:
                 statusCount['ok'] += 1
                 if len(filterStr) > 0:
-                    result += [link]
+                    isMatch = propertyResp.data.lower().find(filterStr.lower()) >= 0
+                    if not isMatch : 
+                        result += [link]
                 else:
                     result += [link]
             else:
                 statusCount['err'] += 1 
         remainingProperties -= 10
     return result, statusCount
+
+
 t1 = time.time()
-urls, statusCount = getPropertyUrls()
+urls, statusCount = getPropertyUrls('Minimum 1 Year')
 t2 = time.time()
 print 'results:'
 print 'status count:'
 print '    ok  - ', statusCount['ok']
 print '    err - ', statusCount['err']
 print 'time taken', t2 - t1
-
-#for url in urls:
-#    print url
+print 'writing ....'
+filename = 'urls.txt'
+try:
+    os.remove(filename)
+except OSError:
+    pass
+with open(filename, 'w') as f:
+    for url in urls:
+        f.write(url)
+        f.write('\n')
+print 'all urls written to urls.txt'
 
 #find by sr_couter
 
