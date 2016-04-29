@@ -73,13 +73,3 @@ with open(filename, 'w') as f:
         f.write(url)
         f.write('\n')
 print 'all urls written to urls.txt'
-
-#find by sr_couter
-
-#p = re.compile('minimum 3 months')
-#
-#for item in root.iter('item'):
-#    print 'item:', "".join(item.itertext())
-#print p.search(root.text.lower())
-
-
