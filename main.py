@@ -3,8 +3,13 @@ import xml.etree.ElementTree as ET
 import re
 import time
 import os
+import sqlite3
 
 http = urllib3.PoolManager()
+#conn = sqlite3.connect('main.db')
+#c = conn.cursor()
+
+#c.execute('''create table if not exists urls(url varchar(100) primary key, timestamp int) ''')
 
 def getSearchUrls(baseUrl):
     listOfUrls = [baseUrl]
