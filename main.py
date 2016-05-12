@@ -4,8 +4,10 @@ import re
 import time
 import os
 import sqlite3
+import sys
 
 http = urllib3.PoolManager()
+user_agent = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.137 Safari/4E423F'}
 #conn = sqlite3.connect('main.db')
 #c = conn.cursor()
 
@@ -34,7 +36,7 @@ def getPropertyUrls(filterStr="", exclude=True):
     remainingProperties = foundNum
     for page in allSearchPages:
         start = 0
-        r = http.request('get', page)
+        r = http.request('get', page, headers=user_agent)
         propertiesOnPage = 10 if remainingProperties >= 10 else remainingProperties
         for x in xrange(propertiesOnPage):
             start = r.data.index('sr_counter', start+1)
@@ -48,11 +50,21 @@ def getPropertyUrls(filterStr="", exclude=True):
             if propertyResp.status == 200:
                 statusCount['ok'] += 1
                 if len(filterStr) > 0:
-                    isMatch = propertyResp.data.lower().find(filterStr.lower()) >= 0
+                    isMatch = False
+                    data = propertyResp.data.lower()
+                    for s in filterStr:
+                        if data.find(s.lower()) >= 0:
+                            isMatch = True
                     if not isMatch : 
-                        result += [link]
+                        
+                        boxStart = r.data.rfind('<div class="box', 0, start)
+                        boxEnd = r.data.find('saved ads', boxStart)
+                        boxEnd = r.data.find('</div', boxEnd)
+                        boxEnd = r.data.find('</div', boxEnd+1)
+                        box = r.data[boxStart: boxEnd+6]
+                        result += [(link, box.replace('<a href="', '<a href="http://www.daft.ie'))]
                 else:
-                    result += [link]
+                    result += [(link, "")]
             else:
                 statusCount['err'] += 1 
         remainingProperties -= 10
@@ -60,24 +72,50 @@ def getPropertyUrls(filterStr="", exclude=True):
 
 
 t1 = time.time()
-urls, statusCount = getPropertyUrls('Minimum 1 Year')
+urls, statusCount = getPropertyUrls(['Minimum 1 Year', 'Minimum 6 Months', 'minimum 9 months'])
 t2 = time.time()
 print 'results:'
+print 'num of urls: ', len(urls)
 print 'status count:'
 print '    ok  - ', statusCount['ok']
 print '    err - ', statusCount['err']
 print 'time taken', t2 - t1
 print 'writing ....'
-filename = 'urls.txt'
+filename = 'build/index.html'
 try:
     os.remove(filename)
 except OSError:
     pass
 with open(filename, 'w') as f:
+    f.write('''
+<!DOCTYPE html>
+<head>
+<title>Test</title>
+<link rel="stylesheet"
+              type="text/css"
+              href="daft.ie.css" />
+</head>
+<body>
+<table id="sr_content">
+<tbody>
+<tr>
+<td style="vertical-align:top">
+    ''')
     for url in urls:
-        f.write(url)
-        f.write('\n')
-print 'all urls written to urls.txt'
+        if not len(url[1]) > 0:
+            f.write('<a href="')
+            f.write(url[0])
+            f.write('">'+url[0]+'</a><br>\n')
+        else:
+            f.write(url[1])
+    f.write('''
+</td >
+</tr>
+</tbody>
+</table>
+</body>
+    ''')
+print 'all urls written.'
 
 #find by sr_couter
 
