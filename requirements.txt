@@ -1,6 +1,6 @@
 Brlapi==0.6.1
 Cheetah==2.4.4
-Django==1.4
+Django==1.11.23
 GnuPGInterface==0.3.2
 Jinja2==2.7.3
 Mako==0.9.1
