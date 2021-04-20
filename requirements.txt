@@ -22,7 +22,7 @@ anyjson==0.3.3
 apt-xapian-index==0.45
 arandr==0.1.7.1
 argparse==1.2.1
-autobahn==0.8.9
+autobahn==20.12.3
 backports.ssl-match-hostname==3.4.0.2
 billiard==2.7.3.31
 celery==3.0.21
