@@ -25,7 +25,7 @@ argparse==1.2.1
 autobahn==0.8.9
 backports.ssl-match-hostname==3.4.0.2
 billiard==2.7.3.31
-celery==3.0.21
+celery==5.2.2
 certifi==2015.04.28
 cffi==0.8.2
 chardet==2.0.1
