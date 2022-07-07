@@ -88,7 +88,7 @@ pytz==2012c
 pyxdg==0.25
 pyzmq==14.6.0
 reportlab==3.0
-requests==2.2.1
+requests==2.20.0
 service-identity==0.2
 sessioninstaller==0.0.0
 simplejson==3.5.2
