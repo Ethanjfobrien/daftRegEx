@@ -26,7 +26,7 @@ autobahn==0.8.9
 backports.ssl-match-hostname==3.4.0.2
 billiard==2.7.3.31
 celery==3.0.21
-certifi==2015.04.28
+certifi==2022.12.7
 cffi==0.8.2
 chardet==2.0.1
 colorama==0.2.5
